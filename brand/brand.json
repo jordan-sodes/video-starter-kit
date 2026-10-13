@@ -1,0 +1,26 @@
+{
+  "name": "Your Company",
+  "website": "yourcompany.com",
+  "about": "One or two sentences on what the business does and who it serves. Claude reads this before writing any script.",
+  "audience": "Who the videos are for, e.g. small business owners in Brisbane.",
+  "tone": "Friendly, clear and confident. Plain English, no jargon.",
+  "colors": {
+    "primary": "#3D5AFE",
+    "primaryLight": "#8C9EFF",
+    "dark": "#12141C",
+    "light": "#F5F6FA",
+    "accent": "#FFB300"
+  },
+  "font": "Inter",
+  "logo": {
+    "onDark": "brand/logo-on-dark.svg",
+    "onLight": "brand/logo-on-light.svg",
+    "whitenOnDark": false
+  },
+  "voice": {
+    "name": "Charlie (Australian, conversational)",
+    "voiceId": "IKne3meq5aSn9XLyUdCD",
+    "model": "eleven_multilingual_v2"
+  },
+  "sayAs": {}
+}

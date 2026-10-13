@@ -1,0 +1,42 @@
+{
+  "name": "video-starter-kit",
+  "version": "1.0.0",
+  "description": "Make branded explainer videos by talking to Claude. Remotion + ElevenLabs.",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "@remotion/bundler": "4.0.532",
+    "@remotion/cli": "4.0.532",
+    "@remotion/google-fonts": "4.0.532",
+    "@remotion/media": "4.0.532",
+    "@remotion/renderer": "4.0.532",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.532"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.532",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.39.5",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "voices": "node scripts/voices.mjs",
+    "studio": "remotion studio",
+    "new": "node scripts/new-video.mjs",
+    "voice": "node scripts/voice.mjs",
+    "pick": "node scripts/pick.mjs",
+    "scenes": "node scripts/scenes.mjs",
+    "music": "node scripts/music.mjs",
+    "sheet": "node scripts/sheet.mjs",
+    "export": "node scripts/export.mjs",
+    "check": "tsc && eslint src"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}
