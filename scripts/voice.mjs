@@ -125,7 +125,7 @@ const speak = async (text, seed, shown) => {
     }
   });
   if (cur) words.push(cur);
-  // Show the script's spelling ("Wakata"), not the respelling ("Wakarta"), when the word counts line up.
+  // Show the script's spelling, not the respelling from sayAs, when the word counts line up.
   const orig = shown.split(/\s+/).filter(Boolean);
   const out = words.map((w, i) => ({
     w: orig.length === words.length ? orig[i] : w.w,

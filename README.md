@@ -16,7 +16,7 @@ Do these on your home or work internet, not shared Wi-Fi at an event.
 4. **ElevenLabs** (the voice, free): sign up at https://elevenlabs.io.
    Then **Developers → API Keys → Create Key**, name it "video kit", and keep that page open. You'll paste the key in later, when Claude asks.
    *Signing up at home matters: ElevenLabs blocks free accounts when lots of people sign up from the same network.*
-5. **This kit**: download the zip.
+5. **This kit**: go to https://github.com/jordan-sodes/video-starter-kit, click the green **Code** button, then **Download ZIP**.
    - **Windows:** right-click it → **Extract All…** and put it in `C:\Users\<your name>\video-kit`. Not inside OneDrive.
    - **Mac:** double-click the zip and move the folder to your home folder.
 

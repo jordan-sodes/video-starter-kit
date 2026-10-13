@@ -2,7 +2,7 @@ import { useVideoConfig } from "remotion";
 
 export const FPS = 30;
 
-/** Standard Wakata output formats. */
+/** Output formats. */
 export const formats = {
   /** YouTube, website, presentations. */
   landscape: { width: 1920, height: 1080 },
