@@ -1,10 +1,11 @@
 // Record the voiceover: one clip per line of work/<slug>/lines.json, timed word by word.
-//   npm run voice -- <slug>                  record every line (asks ElevenLabs; uses credits)
+//   npm run voice -- <slug>                  record every line (uses ElevenLabs credits)
 //   npm run voice -- <slug> --only 03,05     re-record just those lines
 //   npm run voice -- <slug> --silent         no voice: a timed draft with on-screen words only (free)
 //
 // Lines containing a word from "sayAs" in brand/brand.json get three takes to choose from:
 //   A  spelled as written       B  spelled the "sayAs" way       C  "sayAs" again, different seed
+// One API call per take: the audio comes back with its own word timings (works on free accounts).
 // Then it times the video and makes the listening page (work/<slug>/takes/index.html).
 import fs from "node:fs";
 import path from "node:path";
@@ -31,13 +32,11 @@ const only = (args.includes("--only") ? args[args.indexOf("--only") + 1] : "")
   .split(",")
   .filter(Boolean);
 const silent = args.includes("--silent");
-const retime = args.includes("--retime");
 const B = brand();
 const lines = readJson(P.lines);
 const meta = readJson(P.meta);
-const pick = (k) =>
-  !only.length ||
-  only.some((o) => k === o || k.startsWith(`${o}-`) || k.startsWith(o));
+const wanted = (k) =>
+  !only.length || only.some((o) => k === o || k.startsWith(o));
 
 const empty = Object.entries(lines).filter(([, t]) => !t.trim());
 if (empty.length)
@@ -55,7 +54,7 @@ for (const d of [P.vo, P.takes, P.words]) fs.mkdirSync(d, { recursive: true });
 if (silent) {
   // Rough timings at ~150 words a minute, with pauses at commas and full stops.
   for (const [k, t] of Object.entries(lines)) {
-    if (!pick(k)) continue;
+    if (!wanted(k)) continue;
     let s = 0;
     const words = t
       .split(/\s+/)
@@ -79,85 +78,107 @@ if (silent) {
 const key = elevenKey();
 if (!key)
   fail(
-    'No ElevenLabs key yet. Ask Claude: "Help me add my ElevenLabs key". Or make a silent draft first: npm run voice -- ' +
-      slug +
-      " --silent",
+    `No ElevenLabs key yet. Ask Claude: "Help me set up ElevenLabs". Or make a silent draft first: npm run voice -- ${slug} --silent`,
   );
 
-const todo = Object.entries(lines).filter(([k]) => pick(k));
-const chars = retime
-  ? 0
-  : todo.reduce((n, [, t]) => n + t.length * (tricky(t) ? 3 : 1), 0);
-if (chars) {
-  const c = await credits(key);
-  if (c.left < chars)
-    fail(
-      `This needs about ${chars} ElevenLabs characters but only ${c.left} are left this month (${c.tier} plan). Top up, or record fewer lines with --only.`,
-    );
-  console.log(
-    `Recording ${todo.length} line(s), about ${chars} characters (${c.left} left on your ${c.tier} plan).\n`,
-  );
+const todo = Object.entries(lines).filter(([k]) => wanted(k));
+const chars = todo.reduce((n, [, t]) => n + t.length * (tricky(t) ? 3 : 1), 0);
+let c;
+try {
+  c = await credits(key);
+} catch (e) {
+  fail(`${e.message}\n  Run: npm run doctor`);
 }
+if (c.left < chars)
+  fail(
+    `This needs about ${chars.toLocaleString()} ElevenLabs credits but only ${c.left.toLocaleString()} are left this month (${c.tier} plan). Shorten the script, record fewer lines with --only, or upgrade at elevenlabs.io.`,
+  );
+console.log(
+  `Recording ${todo.length} line(s): about ${chars.toLocaleString()} credits of the ${c.left.toLocaleString()} left on your ${c.tier} plan.\n`,
+);
 
-const tts = async (text, seed) =>
-  eleven(`/v1/text-to-speech/${B.voice.voiceId}?output_format=mp3_44100_128`, {
-    key,
-    method: "POST",
-    json: { text, model_id: B.voice.model || "eleven_multilingual_v2", seed },
-    raw: true,
+/** Speak `text`; returns the mp3 and word timings. `shown` is the script's spelling, used for the words. */
+const speak = async (text, seed, shown) => {
+  const d = await eleven(
+    `/v1/text-to-speech/${B.voice.voiceId}/with-timestamps?output_format=mp3_44100_128`,
+    {
+      key,
+      method: "POST",
+      json: { text, model_id: B.voice.model || "eleven_multilingual_v2", seed },
+    },
+  );
+  const {
+    characters: ch,
+    character_start_times_seconds: st,
+    character_end_times_seconds: en,
+  } = d.alignment;
+  const words = [];
+  let cur = null;
+  ch.forEach((x, i) => {
+    if (/\s/.test(x)) {
+      if (cur) words.push(cur);
+      cur = null;
+    } else if (!cur) cur = { w: x, s: st[i], e: en[i] };
+    else {
+      cur.w += x;
+      cur.e = en[i];
+    }
   });
+  if (cur) words.push(cur);
+  // Show the script's spelling ("Wakata"), not the respelling ("Wakarta"), when the word counts line up.
+  const orig = shown.split(/\s+/).filter(Boolean);
+  const out = words.map((w, i) => ({
+    w: orig.length === words.length ? orig[i] : w.w,
+    s: +w.s.toFixed(2),
+    e: +w.e.toFixed(2),
+  }));
+  return { mp3: Buffer.from(d.audio_base64, "base64"), words: out };
+};
 
-const transcribe = async (file) => {
-  const form = new FormData();
-  form.append("model_id", "scribe_v1");
-  form.append("file", new Blob([fs.readFileSync(file)]), path.basename(file));
-  const d = await eleven("/v1/speech-to-text", { key, method: "POST", form });
-  const words = d.words
-    .filter((w) => w.type === "word")
-    .map((w) => ({ w: w.text, s: +w.start.toFixed(2), e: +w.end.toFixed(2) }));
-  return { said: d.text, words };
+const save = (base, r) => {
+  fs.writeFileSync(`${base}.mp3`, r.mp3);
+  writeJson(`${base}.json`, r.words);
 };
 
 try {
   for (const [k, t] of todo) {
-    const clip = path.join(P.vo, `${k}.mp3`);
-    if (!retime) {
-      if (tricky(t)) {
-        fs.writeFileSync(path.join(P.takes, `${k}-A.mp3`), await tts(t, 11));
-        fs.writeFileSync(
-          path.join(P.takes, `${k}-B.mp3`),
-          await tts(respell(t), 11),
-        );
-        fs.writeFileSync(
-          path.join(P.takes, `${k}-C.mp3`),
-          await tts(respell(t), 22),
-        );
-        fs.copyFileSync(path.join(P.takes, `${k}-B.mp3`), clip);
-      } else {
-        fs.writeFileSync(clip, await tts(t, 11));
-      }
+    let used;
+    if (tricky(t)) {
+      const takes = {
+        A: await speak(t, 11, t),
+        B: await speak(respell(t), 11, t),
+        C: await speak(respell(t), 22, t),
+      };
+      for (const [v, r] of Object.entries(takes))
+        save(path.join(P.takes, `${k}-${v}`), r);
+      used = takes.B;
+    } else {
+      used = await speak(t, 11, t);
     }
-    const { said, words } = await transcribe(clip);
-    writeJson(path.join(P.words, `${k}.json`), words);
-    const end = words.at(-1)?.e ?? 0;
-    const flag =
-      said.trim().endsWith("?") && !t.trim().endsWith("?")
-        ? "   ⚠ sounds like a question: re-record with a different seed"
-        : "";
+    fs.writeFileSync(path.join(P.vo, `${k}.mp3`), used.mp3);
+    writeJson(path.join(P.words, `${k}.json`), used.words);
+    const end = used.words.at(-1)?.e ?? 0;
     console.log(
-      `  ${k.padEnd(18)} ${end.toFixed(1).padStart(5)}s  ${said}${tricky(t) ? "   (3 takes)" : ""}${flag}`,
+      `  ${k.padEnd(18)} ${end.toFixed(1).padStart(5)}s  ${t}${tricky(t) ? "   (3 takes)" : ""}`,
     );
   }
 } catch (e) {
+  const free = /library voices|payment_required|free users/i.test(e.message);
   fail(
-    `${e.message}\n  Check the key and the voice in brand/brand.json (run: npm run doctor).`,
+    `${e.message}\n  ` +
+      (free
+        ? "Free accounts can only use ElevenLabs' default voices through the kit. Run: npm run voices (it marks the ones that work on free)."
+        : /unusual activity/i.test(e.message)
+          ? "ElevenLabs has paused this free account (it happens when several free accounts sign up from one network). Try again from home or a phone hotspot, or upgrade."
+          : "Check the key and the voice in brand/brand.json (run: npm run doctor)."),
   );
 }
 
 writeJson(P.meta, { ...meta, silent: false });
 const { scenes, total } = writeTimeline(slug);
 takesPage();
-console.log(`\n✓ Voice done. The video will run ${fmt(total)} (${scenes.length} scenes).
+const after = await credits(key).catch(() => null);
+console.log(`\n✓ Voice done. The video will run ${fmt(total)} (${scenes.length} scenes).${after ? ` ${after.left.toLocaleString()} credits left.` : ""}
 Listen: start "takes" in the browser pane, then open http://localhost:8765/${slug}/takes/index.html`);
 
 function takesPage() {
@@ -172,7 +193,7 @@ function takesPage() {
         ["B", "Spelled out (in the video now)"],
         ["C", "Spelled out, another read"],
       ])
-        rows += `<div class=t><b>${v}</b><audio controls preload=none src="${k}-${v}.mp3"></audio><span>${d}</span></div>`;
+        rows += `<div class=t><b>${v}</b><audio controls preload=none src="${k}-${v}.mp3?${Date.now()}"></audio><span>${d}</span></div>`;
     } else {
       fs.copyFileSync(
         path.join(P.vo, `${k}.mp3`),

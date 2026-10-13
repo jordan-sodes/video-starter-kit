@@ -4,24 +4,33 @@ Make short branded videos (explainers, promos, social clips) by talking to Claud
 Claude writes the script, makes the voiceover, builds every scene in your colours and renders the video.
 It checks with you at each step.
 
-## What you need
+**Cost:** a Claude Pro plan (US$20/month, or $17/month billed yearly). Everything else is free to start.
 
-- A Mac or Windows computer
-- The **Claude desktop app** with a paid Claude plan (Pro or Max): https://claude.ai/download
-- **Node.js** (free): https://nodejs.org. Download the LTS version, run the installer, and click through.
-- Optional, for the voice: an **ElevenLabs** account (free to try): https://elevenlabs.io
+## Before you start (about 15 minutes, at home or work)
+
+Do these on your home or work internet, not shared Wi-Fi at an event.
+
+1. **Claude**: sign up for Claude Pro at https://claude.ai, then install the desktop app: https://claude.ai/download
+2. **Node.js**: https://nodejs.org. Click the big **LTS** download, run it, and click Next until it's done.
+3. **Windows only: Git for Windows**: https://git-scm.com/download/win. Run it and keep all the default options.
+4. **ElevenLabs** (the voice, free): sign up at https://elevenlabs.io.
+   Then **Developers → API Keys → Create Key**, name it "video kit", and keep that page open. You'll paste the key in later, when Claude asks.
+   *Signing up at home matters: ElevenLabs blocks free accounts when lots of people sign up from the same network.*
+5. **This kit**: download the zip.
+   - **Windows:** right-click it → **Extract All…** and put it in `C:\Users\<your name>\video-kit`. Not inside OneDrive.
+   - **Mac:** double-click the zip and move the folder to your home folder.
 
 ## Get started
 
-1. Unzip this folder somewhere you'll find it again, e.g. your Documents folder.
-2. Open the Claude desktop app, click the **Code** tab, and choose this folder.
-3. Type: **Set me up.**
+1. Open the Claude desktop app, click the **Code** tab, and choose the kit folder.
+2. Type: **Set me up.**
 
-Claude installs everything (about 2 minutes) and tells you if anything is missing. Then try these:
-
-- **Render the example video.** This proves it all works.
-- **Set up my brand from www.yourwebsite.com.** Now the videos use your colours, font and logo.
-- **Make a 30-second video about…** Your first real one.
+   Claude installs everything (about 3 minutes), helps you add your ElevenLabs key, and checks it all works.
+   When it asks permission to run a command, click **Allow**.
+3. Then, one at a time:
+   - **Render the example video.** This proves it all works.
+   - **Set up my brand from www.yourwebsite.com.** Your colours, font and logo.
+   - **Make a 30-second video about…** Your first real one.
 
 ## Where your videos end up
 
@@ -31,6 +40,8 @@ phone file (for email, WhatsApp and texts).
 ## Good to know
 
 - Put your photos, screenshots and documents in the `images` folder, then tell Claude they're there.
-- The voice uses ElevenLabs credits. Claude checks your balance before recording and tells you what a video will cost.
-  Without a key you can still make a full video as a silent draft and add the voice later.
+- **The free ElevenLabs plan** gives 10,000 credits a month, enough for a first video with a few retakes.
+  Free voices are for practice: to use a video for your business (website, social media, ads), upgrade to
+  ElevenLabs Starter (about US$6/month) and ask Claude to re-record the voice.
+- No key, or out of credits? Claude can still make the whole video as a silent draft and add the voice later.
 - Your ElevenLabs key lives in a file called `.env` in this folder. Don't share that file, and never paste the key into a chat.

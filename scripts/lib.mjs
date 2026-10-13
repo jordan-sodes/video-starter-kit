@@ -57,12 +57,17 @@ export const listVideos = () =>
 
 /** The ElevenLabs key from .env, or null. */
 export const elevenKey = () => {
-  const env = path.join(ROOT, ".env");
-  if (!fs.existsSync(env)) return null;
+  // Windows Notepad likes to save ".env" as ".env.txt": accept either.
+  const env = [".env", ".env.txt"]
+    .map((f) => path.join(ROOT, f))
+    .find((f) => fs.existsSync(f));
+  if (!env) return null;
   const line = fs
     .readFileSync(env, "utf8")
+    .replace(/^\uFEFF/, "")
     .split(/\r?\n/)
-    .find((l) => l.startsWith("ELEVENLABS_API_KEY="));
+    .map((l) => l.trim())
+    .find((l) => l.startsWith("ELEVENLABS_API_KEY"));
   const k = line
     ?.split("=")[1]
     ?.trim()

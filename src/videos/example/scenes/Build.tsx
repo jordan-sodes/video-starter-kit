@@ -10,7 +10,7 @@ const SWATCHES = [brand.primary, brand.primaryLight, brand.accent, brand.light];
 /** "It builds every scene in your colours, your font and your logo, timed to the words." */
 export const Build: React.FC = () => {
   const frame = useCurrentFrame();
-  const colours = useIn(cue("build", "colors") - 4);
+  const colours = useIn(cue("build", "colours") - 4);
   const font = useIn(cue("build", "font") - 4);
   const logo = useIn(cue("build", "logo") - 4);
   const timed = useIn(cue("build", "timed") - 6);
@@ -44,8 +44,8 @@ export const Build: React.FC = () => {
               const p = interpolate(
                 frame,
                 [
-                  cue("build", "colors") + i * 3,
-                  cue("build", "colors") + i * 3 + 10,
+                  cue("build", "colours") + i * 3,
+                  cue("build", "colours") + i * 3 + 10,
                 ],
                 [0, 1],
                 { ...clamp, easing: ease.out },

@@ -8,7 +8,7 @@ The voice reads exactly what's written, and it guesses at anything ambiguous.
 - **Names**: the business name, people, places and products. If one comes out wrong, add it to `sayAs` in `brand/brand.json` with a spelling that sounds right (e.g. `"Wakata": "Wakarta"`, `"Nguyen": "Win"`). Every line containing it then gets three takes: A as written, B and C respelled. The screen still shows the real spelling.
   - Avoid hyphens in respellings ("Wa-karta" over-stresses the first part). Try a plain respelling first.
 - **Numbers and symbols**: write them as spoken. "Forty-five dollars", "two thousand and twenty-six", "nine to five", "twenty-four seven", "R and R". Not "$45", "2026", "9–5", "24/7".
-- **Acronyms**: ones people say as words or letters (CEO, NDIS, GST) are usually fine; check the transcript.
+- **Acronyms**: ones people say as words or letters (CEO, NDIS, GST) are usually fine; listen to check.
 - **"Can't"** may come out American with some voices; "cannot" or a rephrase is safer.
 
 ## Style
@@ -20,14 +20,16 @@ The voice reads exactly what's written, and it guesses at anything ambiguous.
 
 ## Choosing a voice
 
-The kit starts with **Charlie** (Australian, conversational), a stock voice every ElevenLabs account has.
-To change it, open https://elevenlabs.io/app/voice-library with them and listen for one that fits.
-They click **Add to my voices**, then give you its name. `npm run voices` lists every voice in their account with its ID.
+The kit starts with **Charlie** (Australian, conversational), one of ElevenLabs' default voices.
+`npm run voices` lists the voices that work on their plan, each with a "listen" link: open the links in the browser pane.
+- **Free plan:** only the default voices work through the kit. Voice Library voices need a paid plan.
+- **Paid plan:** they can also browse https://elevenlabs.io/app/voice-library, click **Add to my voices**, and it then shows in `npm run voices`.
 
-Then update `voice` in `brand/brand.json` and run `npm run doctor`. Record one test line before a whole video.
+Put the ID and name in `voice` in `brand/brand.json`, run `npm run doctor -- --voice`, and record one test line before a whole video.
 
 ## Costs (ElevenLabs characters)
 
 Every character of text sent to the voice counts, and a line with a tricky word costs three times its length.
 A 60-second video is about 1,000 characters, or up to 2,500 with takes and a few re-records.
-The free plan has about 10,000 a month. `npm run doctor` shows what's left.
+The free plan has 10,000 a month. `npm run doctor` shows what's left.
+Free-plan audio is for practice: business use needs a paid plan (Starter, about US$6/month), and the voice re-recorded on it.

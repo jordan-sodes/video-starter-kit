@@ -24,6 +24,7 @@
     "typescript": "5.9.3"
   },
   "scripts": {
+    "setup": "node node_modules/@remotion/cli/remotion-cli.js browser ensure && node scripts/doctor.mjs --voice",
     "doctor": "node scripts/doctor.mjs",
     "voices": "node scripts/voices.mjs",
     "studio": "remotion studio",

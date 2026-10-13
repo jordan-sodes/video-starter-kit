@@ -4,7 +4,16 @@
 //   npm run export -- <slug> "<Name>"        e.g. npm run export -- spring-sale "Spring sale v1"
 import fs from "node:fs";
 import path from "node:path";
-import { need, pascal, readJson, paths, remotion, ROOT } from "./lib.mjs";
+import {
+  credits,
+  elevenKey,
+  need,
+  pascal,
+  readJson,
+  paths,
+  remotion,
+  ROOT,
+} from "./lib.mjs";
 
 const [slug, nameArg] = process.argv.slice(2);
 need(slug, 'npm run export -- <slug> "<Name>"');
@@ -56,3 +65,12 @@ const mb = (f) =>
 console.log(
   `\n✓ Ready to share:\n  ${full}  (${mb(full)})\n  ${phone}  (${mb(phone)})`,
 );
+// Free ElevenLabs voices are for practice only.
+const key = elevenKey();
+if (key && !readJson(paths(slug).meta).silent) {
+  const c = await credits(key).catch(() => null);
+  if (c?.tier === "free")
+    console.log(`\n! The voice was made on a free ElevenLabs plan: fine for practice and sharing with friends,
+  not for business use. Credit "elevenlabs.io" if you post it. To use it for your business, upgrade
+  (Starter, about US$6/month), then ask Claude to "re-record the voice and export again".`);
+}

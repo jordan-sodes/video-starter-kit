@@ -8,13 +8,6 @@ import build from "./words/04-build.json";
 import fix from "./words/05-fix.json";
 import close from "./words/06-close.json";
 
-export const words: Record<SceneId, Word[]> = {
-  hook,
-  brief,
-  voice,
-  build,
-  fix,
-  close,
-};
+export const words: Record<SceneId, Word[]> = { hook, brief, voice, build, fix, close };
 
 export const cue = makeCue<SceneId>(words, scene);

@@ -15,18 +15,26 @@ They talk, listen, look and decide.
 
 ## Start of every session
 
-1. Run `npm run doctor`. If the video tools aren't installed, run `npm install` first (takes about 2 minutes; tell them).
+1. Run `npm run doctor`. If the video tools aren't installed, run `npm install` then `npm run setup` (about 3 minutes in all; tell them).
 2. Fix anything it flags, or walk them through it (see *Setting up*, below).
 3. If they haven't said what they want, offer three starting points: "Render the example video", "Set up my brand", "Make a video about…".
 
 ## Setting up (first time only)
 
-- **"Set me up" / "Install the kit"**: `npm install`, then `npm run doctor`, then explain what's left in plain words.
-- **Node missing or too old**: they need the LTS installer from https://nodejs.org (click the big green button, run it, then quit and reopen Claude). You can't install it for them.
-- **ElevenLabs key** (for the voice): it's optional to start, since videos work as silent drafts. To add one:
-  1. Sign up at https://elevenlabs.io (the free plan works for trying it; Starter or higher for music and commercial use).
-  2. Click their name or Developers → **API Keys** → Create. Give it access to Text to Speech, Speech to Text, Voices, User and (if available) Music.
-  3. **Never ask them to paste the key into the chat.** Create the `.env` file yourself with `ELEVENLABS_API_KEY=` and nothing after it, open it for them with the `open_in_editor` tool (or tell them where it is), and ask them to paste the key after the `=` and save. Then run `npm run doctor` to check it.
+**"Set me up"**: run `npm install`, then `npm run setup`. That downloads the renderer (about 90 MB, once), checks everything and, if there's a key, has the voice say one test word. Then explain what's left in plain words.
+
+- **Node missing or too old**: they need the LTS installer from https://nodejs.org (the big green button; run it and click Next through it), then quit and reopen Claude. You can't install it for them.
+- **Windows**:
+  - If the doctor says the kit is inside the zip or inside OneDrive, have them extract or move the folder to `C:\Users\<name>\video-kit` and reopen it in Claude.
+  - Git for Windows (https://git-scm.com/download/win, all default options) makes your command tool work best. Recommend it, but it isn't required.
+- **ElevenLabs (the voice)**: walk them through it the first time. It's free, and the free plan (10,000 credits a month) is plenty for a first video of 30 to 60 seconds.
+  1. **Use their home or work internet, or a phone hotspot, not shared event Wi-Fi or a VPN.** ElevenLabs blocks free accounts when several sign up from one network, and that can't be undone.
+  2. Sign up at https://elevenlabs.io with Google or an email address. Skip any offers to upgrade.
+  3. Create a key: profile menu (bottom left) or **Developers → API Keys** → **Create Key**. Name it "video kit". If it offers "Restrict key", allow **Text to Speech** and set **Voices** and **User** to read. Click Create and copy the key (it's shown only once).
+  4. **Never ask them to paste the key into the chat.** Create `.env` yourself containing `ELEVENLABS_API_KEY=` and nothing after it. Open it for them with the `open_in_editor` tool (or tell them where it is in plain words), and ask them to paste the key straight after the `=` and save. On Windows, Notepad may save it as `.env.txt`; the kit copes with that.
+  5. Run `npm run doctor -- --voice`. It should end with "Voice test: ElevenLabs spoke a test word". If it says **"unusual activity"**, the account is blocked by ElevenLabs. Carry on with a silent draft (`--silent`); they can voice it later with a paid key.
+- **Picking a voice**: the kit starts with Charlie, an Australian voice. Run `npm run voices` to list the voices that work on their plan, each with a "listen" link. Open the links in the browser pane so they can hear them. On the free plan only ElevenLabs' default voices work through the kit (the Voice Library needs a paid plan). Put the chosen ID and name in `voice` in `brand/brand.json`.
+- **Free vs paid**: free-plan voices are for practice only. They can't be used for business marketing, and must credit "elevenlabs.io". When they're ready to publish, they upgrade (Starter, about US$6 a month) and you re-record the voice (`npm run voice -- <slug>`, then export again). Mention this once, kindly, when they export their first video. Don't nag.
 - **Their brand**: use the **set-up-brand** skill.
 
 ## Making a video
@@ -36,7 +44,9 @@ Use the **make-video** skill. It's the full process with the checkpoints where y
 ## The commands (you run these; they don't)
 
 ```bash
-npm run doctor                          # is everything ready?
+npm run setup                           # first time, after npm install: renderer + full check
+npm run doctor [-- --voice]             # is everything ready? (--voice: speak a test word, ~5 credits)
+npm run voices                          # voices that work on their ElevenLabs plan, with listen links
 npm run new -- <slug> "<Title>" [--format landscape|portrait|square|feed]
 npm run voice -- <slug> [--only 03] [--silent]   # record (or time a silent draft), make the takes page
 npm run pick -- <slug> 02B 05C          # use the takes they chose
@@ -66,7 +76,7 @@ Previews: `.claude/launch.json` has **studio** (Remotion Studio, port 3000) and 
 
 - **Colours, fonts and logos come from `src/brand` and `brand/brand.json`.** Never type a hex code into a scene.
 - **Secrets**: the ElevenLabs key lives only in `.env`. Never print it, paste it, read it aloud or put it in any other file.
-- **Credits cost money.** `npm run voice` checks the balance and refuses if there isn't enough. Before recording a whole video, say roughly how many characters it'll use (about 1,000–2,500 for 60 seconds, including takes). Re-record single lines with `--only`.
+- **Credits are limited.** A free account has 10,000 a month. `npm run voice` checks the balance and refuses if there isn't enough. Before recording, say roughly what it'll use (1 credit per character; a line with a tricky word is recorded 3 times). Keep a first video to 30–60 seconds (about 500–2,000 credits with retakes). Re-record single lines with `--only`, never the whole video for one fix.
 - **Their material**: photos and documents in `images/` belong to them or their customers. Don't use one customer's material in another customer's video. Ask before using anything with real people's names, faces or contact details.
 - **Truth**: don't put claims in a script that their sources don't support. Keep an *Accuracy notes* list in each `SCRIPT.md` and ask when unsure.
 - Don't change the files under `scripts/` or `src/lib/` unless something is broken. Videos are built from `src/components/` and each video's own `scenes/`.

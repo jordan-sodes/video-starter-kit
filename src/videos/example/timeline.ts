@@ -2,12 +2,12 @@
 import { buildTimeline } from "../../lib/voTimeline";
 
 const VO = [
-  { id: "hook", file: "01-hook.mp3", secs: 2.29 },
-  { id: "brief", file: "02-brief.mp3", secs: 5.39 },
-  { id: "voice", file: "03-voice.mp3", secs: 3.45 },
-  { id: "build", file: "04-build.mp3", secs: 4.83 },
-  { id: "fix", file: "05-fix.mp3", secs: 2.97 },
-  { id: "close", file: "06-close.mp3", secs: 2.85 },
+  { id: "hook", file: "01-hook.mp3", secs: 2.62 },
+  { id: "brief", file: "02-brief.mp3", secs: 5.73 },
+  { id: "voice", file: "03-voice.mp3", secs: 3.83 },
+  { id: "build", file: "04-build.mp3", secs: 5.17 },
+  { id: "fix", file: "05-fix.mp3", secs: 3.36 },
+  { id: "close", file: "06-close.mp3", secs: 3.18 },
 ] as const;
 
 export type SceneId = (typeof VO)[number]["id"];
