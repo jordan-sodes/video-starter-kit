@@ -12,7 +12,8 @@ It checks with you at each step.
 2. **Node.js**: https://nodejs.org. Click the big **LTS** download, run it, and click Next until it's done.
 3. **Windows only: Git for Windows**: https://git-scm.com/download/win. Run it and keep all the default options.
 4. **ElevenLabs** (the voice, free): sign up at https://elevenlabs.io.
-   Then **Developers → API Keys → Create Key**, name it "video kit", and keep that page open. You'll paste the key in later, when Claude asks.
+   Then open **https://elevenlabs.io/app/developers/api-keys**, click **Create Key**, name it "video kit", click **Create**, then **Copy**.
+   The key starts with `sk_` and is only shown once, so keep it in a note until Claude asks for it.
 5. **This kit**: go to https://github.com/jordan-sodes/video-starter-kit, click the green **Code** button, then **Download ZIP**.
    - **Windows:** right-click it → **Extract All…** and put it in `C:\Users\<your name>\video-kit`. Not inside OneDrive.
    - **Mac:** double-click the zip and move the folder to your home folder.
