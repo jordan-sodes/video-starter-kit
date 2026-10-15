@@ -10,6 +10,8 @@ It checks with you at each step.
 
 1. **Claude**: sign up for Claude Pro at https://claude.ai, then install the desktop app: https://claude.ai/download
 2. **Node.js**: https://nodejs.org. Click the big **LTS** download, run it, and click Next until it's done.
+   **Windows: on the "Tools for Native Modules" screen, leave the box unticked.** Ticking it runs a PowerShell script that installs Chocolatey and build tools. The kit doesn't need them, and work security software often blocks that script (it can cut your computer off the network).
+   **Using a work computer?** Check with your IT team before installing anything, or use a personal laptop.
 3. **Windows only: Git for Windows**: https://git-scm.com/download/win. Run it and keep all the default options.
 4. **ElevenLabs** (the voice, free): sign up at https://elevenlabs.io.
    Then open **https://elevenlabs.io/app/developers/api-keys**, click **Create Key**, name it "video kit", click **Create**, then **Copy**.

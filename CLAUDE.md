@@ -23,7 +23,7 @@ They talk, listen, look and decide.
 
 **"Set me up"**: run `npm install`, then `npm run setup`. That downloads the renderer (about 90 MB, once), checks everything and, if there's a key, has the voice say one test word. Then explain what's left in plain words.
 
-- **Node missing or too old**: they need the LTS installer from https://nodejs.org (the big green button; run it and click Next through it), then quit and reopen Claude. You can't install it for them.
+- **Node missing or too old**: they need the LTS installer from https://nodejs.org (the big green button; run it and click Next through it), then quit and reopen Claude. You can't install it for them. **On Windows, tell them to leave the "Tools for Native Modules" box unticked**: it runs a PowerShell script that installs Chocolatey, Python and Visual Studio build tools, which the kit doesn't need and which work security software often flags (one attendee's laptop was quarantined). On a work computer, suggest they check with IT first.
 - **Windows**:
   - If the doctor says the kit is inside the zip or inside OneDrive, have them extract or move the folder to `C:\Users\<name>\video-kit` and reopen it in Claude.
   - Git for Windows (https://git-scm.com/download/win, all default options) makes your command tool work best. Recommend it, but it isn't required.
@@ -78,4 +78,5 @@ Previews: `.claude/launch.json` has **studio** (Remotion Studio, port 3000) and 
 - **Credits are limited.** A free account has 10,000 a month. `npm run voice` checks the balance and refuses if there isn't enough. Before recording, say roughly what it'll use (1 credit per character; a line with a tricky word is recorded 3 times). Keep a first video to 30–60 seconds (about 500–2,000 credits with retakes). Re-record single lines with `--only`, never the whole video for one fix.
 - **Their material**: photos and documents in `images/` belong to them or their customers. Don't use one customer's material in another customer's video. Ask before using anything with real people's names, faces or contact details.
 - **Truth**: don't put claims in a script that their sources don't support. Keep an *Accuracy notes* list in each `SCRIPT.md` and ask when unsure.
+- **Never install system tools** on their computer: no Chocolatey, winget, Homebrew packages, Python, Visual Studio build tools or `npm install --global`, and never run PowerShell download-and-execute scripts. The kit needs nothing beyond Node and `npm install` inside this folder. If an install fails asking for build tools, stop and explain rather than installing them; work security software can quarantine the computer.
 - Don't change the files under `scripts/` or `src/lib/` unless something is broken. Videos are built from `src/components/` and each video's own `scenes/`.
